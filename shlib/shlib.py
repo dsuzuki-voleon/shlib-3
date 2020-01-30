@@ -222,7 +222,6 @@ def mv(*paths):
         shutil.move(to_str(src), to_str(dest))
 
 
-
 # rm {{{2
 def rm(*paths):
     """Remove files or directories (equivalent to rm -rf)"""
@@ -298,6 +297,7 @@ class mount:
     def __exit__(self, exc_type, exc_value, exc_traceback):
         if not self.mounted_externally:
             umount(self.path)
+
 
 def umount(path):
     """Run command umount for string path"""
