@@ -19,7 +19,6 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see [http://www.gnu.org/licenses/].
-
 """
 
 __version__ = '1.1.0'
@@ -121,7 +120,10 @@ def quote_arg(arg):
             import re
         except ImportError:
             def quote(arg):
-                """Return a shell-escaped version of the string *arg*."""
+                """
+                Return a shell-escaped version of the string *arg*.
+                Used if fail to load quote from shlex and pipes.
+                """
                 if not arg:
                     return "''"
                 if re.search(r'[^\w@%+=:,./-]', arg, re.ASCII) is None:
@@ -154,10 +156,12 @@ def set_prefs(**kwargs):
     """
     PREFERENCES.update(kwargs)
 
+
 # SHLib state
 def get_state():
     """Return PREFERENCES"""
     return PREFERENCES
+
 
 def set_state(state):
     """Set new PREFERENCES with state dict and return old PREFERENCES"""
@@ -282,7 +286,6 @@ class mount:
     Mount the path provided in constructor if not already mounted.
 
     Unmount path at object destruction if it has been mount at construction
-
     """
     def __init__(self, path):
         self.path = to_path(path)
@@ -322,7 +325,6 @@ class cd:
     >> with cd(path):
     >>    cwd()
     The working directory returns to its original value upon leaving the with block.
-
     """
     def __init__(self, path):
         self.starting_dir = cwd()
