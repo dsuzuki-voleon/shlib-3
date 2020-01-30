@@ -314,13 +314,13 @@ class cd:
     """
     Change to an existing directory:
 
-    >>> cd(path)
+    >> cd(path)
     Makes path the current working directory.
 
     May also be used in a with block:
 
-    >>> with cd(path):
-    >>>    cwd()
+    >> with cd(path):
+    >>    cwd()
     The working directory returns to its original value upon leaving the with block.
 
     """
