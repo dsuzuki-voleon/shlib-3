@@ -74,7 +74,7 @@ def to_path(*args):
 
 # to_paths {{{2
 def to_paths(args):
-    "Iterate through up to two levels of arguments, converting them to paths"
+    """Iterate through up to two levels of arguments, converting them to paths"""
     for arg in args:
         if is_collection(arg):
             for each in arg:
@@ -85,8 +85,8 @@ def to_paths(args):
 
 # to_str {{{2
 def to_str(path):
-    # first convert to path to assure ~ expansion is done, then convert back to 
-    # string.
+    """first convert to path to assure ~ expansion is done, then convert back to
+    string."""
     return str(to_path(path))
 
 
@@ -744,8 +744,7 @@ class Cmd(object):
     def __str__(self):
         if is_str(self.cmd):
             return self.cmd
-        else:
-            return ' '.join(str(c) for c in self.cmd)
+        return ' '.join(str(c) for c in self.cmd)
 
 
 # Run class {{{2
@@ -870,13 +869,12 @@ class _Accept(object):
             return False
         elif type(self.accept) is tuple:
             return status not in self.accept
-        else:
-            return status < 0 or status > self.accept
+        return status < 0 or status > self.accept
 
 
 # run (deprecated) {{{2
 def run(cmd, stdin=None, accept=0, shell=False):
-    "Run a command without capturing its output."
+    """Run a command without capturing its output."""
     import subprocess
 
     # I have never been able to get Popen to work properly if cmd is not
@@ -899,13 +897,13 @@ def run(cmd, stdin=None, accept=0, shell=False):
 
 # sh (deprecated) {{{2
 def sh(cmd, stdin=None, accept=0, shell=True):
-    "Execute a command with a shell without capturing its output"
+    """Execute a command with a shell without capturing its output"""
     return run(cmd, stdin, accept, shell=True)
 
 
 # bg (deprecated) {{{2
 def bg(cmd, stdin=None, shell=False):
-    "Execute a command in the background without capturing its output."
+    """Execute a command in the background without capturing its output."""
     import subprocess
     streams = {'stdin': subprocess.PIPE} if stdin is not None else {}
     process = subprocess.Popen(cmd, shell=shell, **streams)
@@ -917,13 +915,13 @@ def bg(cmd, stdin=None, shell=False):
 
 # shbg (deprecated) {{{2
 def shbg(cmd, stdin=None, shell=True):
-    "Execute a command with a shell in the background without capturing its output."
+    """Execute a command with a shell in the background without capturing its output."""
     return bg(cmd, stdin, shell=True)
 
 
 # which {{{2
 def which(name, path=None, flags=os.X_OK):
-    "Search PATH for executable files with the given name."
+    """Search PATH for executable files with the given name."""
     result = []
     if path is None:
         path = os.environ.get('PATH', '')
