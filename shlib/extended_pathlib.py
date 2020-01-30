@@ -21,9 +21,9 @@ __version__ = '0.4.0'
 # Imports {{{1
 from pathlib import Path, PosixPath
 import codecs
-import six
 import os
 import sys
+import six
 
 
 # is_readable {{{1

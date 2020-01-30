@@ -27,17 +27,17 @@ try:
     from .extended_pathlib import Path
 except ImportError:
     from pathlib import Path
-from six import string_types
 import itertools
 import shutil
 import errno
 import os
+from six import string_types
 
 # Parameters {{{1
 PREFERENCES = dict(
-    encoding = 'utf-8',
-    log_cmd = False,
-    use_inform = False,
+    encoding='utf-8',
+    log_cmd=False,
+    use_inform=False,
 )
 
 # Utilities {{{1
@@ -81,7 +81,7 @@ def to_paths(args):
                 yield to_path(each)
         else:
             yield to_path(arg)
- 
+
 
 # to_str {{{2
 def to_str(path):
@@ -552,8 +552,8 @@ class Cmd(object):
 
     # __init__ {{{3
     def __init__(
-        self, cmd, modes=None, env=None, encoding=None,
-        log=None, option_args=None
+            self, cmd, modes=None, env=None, encoding=None,
+            log=None, option_args=None
     ):
         self.cmd = cmd
         self.env = env
@@ -633,9 +633,9 @@ class Cmd(object):
             if PREFERENCES['use_inform']:
                 from inform import Error, os_error
                 raise Error(
-                    msg = os_error(e),
-                    cmd = render_command(self.cmd),
-                    template = '{msg}'
+                    msg=os_error(e),
+                    cmd=render_command(self.cmd),
+                    template='{msg}'
                 )
             else:
                 raise
@@ -724,12 +724,12 @@ class Cmd(object):
             if PREFERENCES['use_inform']:
                 from inform import Error
                 raise Error(
-                    msg = msg,
-                    status = self.status,
-                    stdout = self.stdout.rstrip() if self.stdout else None,
-                    stderr = self.stderr.rstrip() if self.stderr else None,
-                    cmd = render_command(self.cmd),
-                    template = '{msg}'
+                    msg=msg,
+                    status=self.status,
+                    stdout=self.stdout.rstrip() if self.stdout else None,
+                    stderr=self.stderr.rstrip() if self.stderr else None,
+                    cmd=render_command(self.cmd),
+                    template='{msg}'
                 )
             else:
                 raise OSError(None, msg)
@@ -764,8 +764,8 @@ class Run(Cmd):
            output = Run(['grep', filename], modes='sOMW1').stdout
     """
     def __init__(
-        self, cmd, modes=None, stdin=None, env=None, encoding=None,
-        log=None, option_args=None
+            self, cmd, modes=None, stdin=None, env=None, encoding=None,
+            log=None, option_args=None
     ):
         self.cmd = cmd
         self.stdin = None
@@ -792,8 +792,8 @@ class Sh(Cmd):
     Default mode is 'SoeW0'.
     """
     def __init__(
-        self, cmd, modes=None, stdin=None, env=None, encoding=None,
-        log=None, option_args=None
+            self, cmd, modes=None, stdin=None, env=None, encoding=None,
+            log=None, option_args=None
     ):
         self.cmd = cmd
         self.stdin = None
@@ -820,8 +820,8 @@ class Start(Cmd):
     captured.
     """
     def __init__(
-        self, cmd, modes=None, stdin=None, env=None, encoding=None,
-        log=None, option_args=None
+            self, cmd, modes=None, stdin=None, env=None, encoding=None,
+            log=None, option_args=None
     ):
         self.cmd = cmd
         self.stdin = None
