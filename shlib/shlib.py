@@ -66,6 +66,7 @@ def is_collection(obj):
 
 # to_path {{{2
 def to_path(*args):
+    """Create a path from a collection of path segments."""
     try:
         return Path(*args).expanduser()
     except AttributeError:
@@ -91,8 +92,8 @@ def to_str(path):
 
 
 # raise_os_error {{{2
-# Raise an error based on the errno.
 def raise_os_error(errno, filename=None):
+    """Raise an error based on the errno."""
     if filename:
         raise OSError(errno, os.strerror(errno), str(filename))
     else:
@@ -101,6 +102,7 @@ def raise_os_error(errno, filename=None):
 
 # split_cmd {{{2
 def split_cmd(cmd):
+    """Split the string cmd and return a list."""
     from shlex import split
     return split(cmd)
 
@@ -150,9 +152,11 @@ def set_prefs(**kwargs):
 
 # SHLib state
 def get_state():
+    """Return PREFERENCES"""
     return PREFERENCES
 
 def set_state(state):
+    """Set new PREFERENCES with state dict and return old PREFERENCES"""
     global PREFERENCES
     old_state = PREFERENCES
     PREFERENCES = state
@@ -162,7 +166,7 @@ def set_state(state):
 # File system utility functions (cp, mv, rm, ln, touch, mkdir, ls, etc.) {{{1
 # cp {{{2
 def cp(*paths):
-    "Copy files or directories (equivalent to 'cp -rf')"
+    """Copy files or directories (equivalent to 'cp -rf')"""
     dest = to_path(paths[-1])
     srcs = list(to_paths(paths[:-1]))
     if dest.is_dir():
@@ -188,7 +192,7 @@ def cp(*paths):
 
 # mv {{{2
 def mv(*paths):
-    "Move file or directory (supports moves across filesystems)"
+    """Move file or directory (supports moves across filesystems)"""
     dest = to_path(paths[-1])
     srcs = list(to_paths(paths[:-1]))
     assert len(srcs) >= 1
@@ -217,7 +221,7 @@ def mv(*paths):
 
 # rm {{{2
 def rm(*paths):
-    "Remove files or directories (equivalent to rm -rf)"
+    """Remove files or directories (equivalent to rm -rf)"""
     for path in to_paths(paths):
         try:
             if path.is_dir():
@@ -235,7 +239,7 @@ def rm(*paths):
 
 # ln {{{2
 def ln(src, dest):
-    "Create symbolic link."
+    """Create symbolic link."""
     dest = to_path(dest)
     dest.symlink_to(src)
 
@@ -287,10 +291,12 @@ class mount:
             umount(self.path)
 
 def umount(path):
+    """Run command umount for string path"""
     Run(['umount', path])
 
 
 def is_mounted(path):
+    """Run command mountpoint for string path"""
     return Run(['mountpoint', '-q', path], '0,1').status == 0
 
 
@@ -316,7 +322,7 @@ def cwd():
 
 # chmod {{{2
 def chmod(mode, *paths):
-    "Change the mode bits of one or more file or directory"
+    """Change the mode bits of one or more file or directory"""
     for path in to_paths(paths):
         path.chmod(mode)
 
