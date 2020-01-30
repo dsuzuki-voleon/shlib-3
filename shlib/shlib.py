@@ -1,23 +1,26 @@
-# shlib -- Scripting utilities
-#
-# A light-weight package with few dependencies that allows users to do
-# shell-script like things relatively easily in Python.
+"""
+ shlib -- Scripting utilities
 
-# License {{{1
-# Copyright (C) 2016-2019 Kenneth S. Kundert
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see [http://www.gnu.org/licenses/].
+ A light-weight package with few dependencies that allows users to do
+ shell-script like things relatively easily in Python.
+
+ License {{{1
+ Copyright (C) 2016-2019 Kenneth S. Kundert
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see [http://www.gnu.org/licenses/].
+
+"""
 
 __version__ = '1.1.0'
 __released__ = '2019-03-21'
@@ -118,6 +121,7 @@ def quote_arg(arg):
             import re
         except ImportError:
             def quote(arg):
+                """Return a shell-escaped version of the string *arg*."""
                 if not arg:
                     return "''"
                 if re.search(r'[^\w@%+=:,./-]', arg, re.ASCII) is None:
@@ -275,7 +279,12 @@ def mkdir(*paths):
 
 # mount/umount {{{2
 class mount:
+    """
+    Mount the path provided in constructor if not already mounted.
 
+    Unmount path at object destruction if it has been mount at construction
+
+    """
     def __init__(self, path):
         self.path = to_path(path)
         self.mounted_externally = is_mounted(self.path)
@@ -302,6 +311,19 @@ def is_mounted(path):
 
 # cd {{{2
 class cd:
+    """
+    Change to an existing directory:
+
+    >>> cd(path)
+    Makes path the current working directory.
+
+    May also be used in a with block:
+
+    >>> with cd(path):
+    >>>    cwd()
+    The working directory returns to its original value upon leaving the with block.
+
+    """
     def __init__(self, path):
         self.starting_dir = cwd()
         os.chdir(to_str(path))
@@ -329,7 +351,7 @@ def chmod(mode, *paths):
 
 # getmod {{{2
 def getmod(path):
-    "Return the permission bits for a file or directory"
+    """Return the permission bits for a file or directory"""
     return os.stat(str(path)).st_mode & 0o777
 
 
@@ -382,6 +404,7 @@ def ls(*paths, **kwargs):
     hidden = kwargs.get('hidden')
 
     def acceptable(path):
+        """Return True if path should be return by ls"""
         if only == 'file' and not path.is_file():
             return False
         if only == 'dir' and not path.is_dir():
@@ -743,6 +766,7 @@ class Cmd(object):
 
     # kill {{{3
     def kill(self):
+        """Kill a command started with Cmd"""
         self.process.kill()
         self.process.wait()
 
@@ -871,6 +895,7 @@ class _Accept(object):
         self.accept = accept
 
     def unacceptable(self, status):
+        """Return True is status is unacceptable otherwise False"""
         if self.accept is True:
             return False
         elif type(self.accept) is tuple:
