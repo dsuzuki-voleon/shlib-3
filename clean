@@ -1,14 +1,8 @@
-#!/bin/csh -f
-
-set nonomatch
+#!/bin/sh
 
 rm -rf *.egg-info
 rm -f {helloworld,test,ref}
 rm -f TEST REF
 rm -rf f[0-9] d[0-9]
-rm -rf .coverage htmlcov
-foreach i (*/clean)
-    if ($i == "*/clean") break
-    #echo $i
-    (cd $i:h; ./clean)
-end
+rm -rf .coverage
+./tests/clean
