@@ -5,8 +5,7 @@ import pytest
 def test_cp_real_downturn():
     """copy existing file to new file"""
     # setup
-    f1 = to_path('SRCFILE')
-    touch(f1)
+    f1 = to_path('tests/SRCFILE')
     f2 = to_path('f2')
 
     # run test
@@ -16,7 +15,7 @@ def test_cp_real_downturn():
     assert f2.is_file()
 
     # cleanup
-    rm(f1, f2)
+    rm(f2)
 
 
 def test_cp_downturn():
