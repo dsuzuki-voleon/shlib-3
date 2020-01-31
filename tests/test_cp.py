@@ -2,6 +2,23 @@ from shlib import to_path, cp, mkdir, rm, touch
 import pytest
 
 
+def test_cp_real_downturn():
+    """copy existing file to new file"""
+    # setup
+    f1 = to_path('SRCFILE')
+    touch(f1)
+    f2 = to_path('f2')
+
+    # run test
+    cp(f1, f2)
+
+    # check
+    assert f2.is_file()
+
+    # cleanup
+    rm(f1, f2)
+
+
 def test_cp_downturn():
     """copy file to new file"""
     # setup
