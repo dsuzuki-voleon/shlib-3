@@ -8,6 +8,11 @@ def test_cp_real_downturn():
     f1 = to_path('tests/SRCFILE')
     f2 = to_path('f2')
 
+    f3 = to_path('f3')
+    f4 = to_path('tests/f4')
+    touch(f3)
+    touch(f4)
+    
     # run test
     cp(f1, f2)
 
