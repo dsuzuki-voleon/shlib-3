@@ -2,12 +2,11 @@
 
 set nonomatch
 
-# the rest is common to all python directories
-rm -f *.pyc *.pyo .test*.sum expected result install.out
-rm -rf build *.egg-info dist __pycache__ .coverage .coverage-html .eggs htmlcov
-rm -f tests/{helloworld,test,ref}
+rm -rf *.egg-info
+rm -f {helloworld,test,ref}
 rm -f TEST REF
-rm -rf tests/.pytest_cache */__pycache__
+rm -rf f[0-9] d[0-9]
+rm -rf .coverage htmlcov
 foreach i (*/clean)
     if ($i == "*/clean") break
     #echo $i
