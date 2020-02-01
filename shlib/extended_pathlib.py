@@ -1,29 +1,32 @@
-# pathlib -- extends system pathlib
+"""
+ pathlib -- extends system pathlib
 
-# License {{{1
-# Copyright (C) 2016-2019 Kenneth S. Kundert
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see [http://www.gnu.org/licenses/].
+ License {{{1
+ Copyright (C) 2016-2019 Kenneth S. Kundert
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see [http://www.gnu.org/licenses/].
+
+"""
 
 __version__ = '0.4.0'
 
 # Imports {{{1
 from pathlib import Path, PosixPath
 import codecs
-import six
 import os
 import sys
+import six
 
 
 # is_readable {{{1
@@ -123,6 +126,7 @@ if sys.version_info < (3, 5):
     def _read_bytes(self):
         """
         Open the file in binary mode, read it, and close the file.
+
         """
         with self.open(mode='rb') as f:
             return f.read()
@@ -133,6 +137,7 @@ if sys.version_info < (3, 5):
     def _read_text(self, encoding=None, errors=None):
         """
         Open the file in text mode, read it, and close the file.
+
         """
         with self.open(mode='r', encoding=encoding, errors=errors) as f:
             return f.read()
@@ -143,6 +148,7 @@ if sys.version_info < (3, 5):
     def _write_bytes(self, data):
         """
         Open the file in binary mode, write it, and close the file.
+
         """
         if not isinstance(data, six.binary_type):
             raise TypeError(
@@ -159,6 +165,7 @@ if sys.version_info < (3, 5):
     def _write_text(self, text, encoding=None, errors=None):
         """
         Open the file in text mode, write it, and close the file.
+
         """
         path = str(self)
         with codecs.open(path, mode='w', encoding=encoding, errors=errors) as f:
@@ -170,6 +177,7 @@ if sys.version_info < (3, 5):
     def _expanduser(self):
         """
         Return a new path with expanded ~ and ~user constructs.
+
         """
 
         path = str(self)

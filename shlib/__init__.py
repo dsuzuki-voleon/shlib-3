@@ -1,3 +1,7 @@
+"""
+ __init__ file for package shlib definition
+
+"""
 __version__ = '1.1.0'
 __released__ = '2019-03-21'
 

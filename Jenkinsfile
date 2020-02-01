@@ -2,6 +2,7 @@ node('master') {
 
   stage('Prep') {
     checkout scm
+    sh "./clean"
     sh "rm -rf penv && virtualenv penv"
     sh "penv/bin/pip install pytest pytest-cov pylint"
     sh "penv/bin/pip install -e ."

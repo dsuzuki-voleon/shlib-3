@@ -1,23 +1,26 @@
-# shlib -- Scripting utilities
-#
-# A light-weight package with few dependencies that allows users to do
-# shell-script like things relatively easily in Python.
+"""
+ shlib -- Scripting utilities
 
-# License {{{1
-# Copyright (C) 2016-2019 Kenneth S. Kundert
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see [http://www.gnu.org/licenses/].
+ A light-weight package with few dependencies that allows users to do
+ shell-script like things relatively easily in Python.
+
+ License {{{1
+ Copyright (C) 2016-2019 Kenneth S. Kundert
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see [http://www.gnu.org/licenses/].
+
+"""
 
 __version__ = '1.1.0'
 __released__ = '2019-03-21'
@@ -27,17 +30,17 @@ try:
     from .extended_pathlib import Path
 except ImportError:
     from pathlib import Path
-from six import string_types
 import itertools
 import shutil
 import errno
 import os
+from six import string_types
 
 # Parameters {{{1
 PREFERENCES = dict(
-    encoding = 'utf-8',
-    log_cmd = False,
-    use_inform = False,
+    encoding='utf-8',
+    log_cmd=False,
+    use_inform=False,
 )
 
 # Utilities {{{1
@@ -66,6 +69,7 @@ def is_collection(obj):
 
 # to_path {{{2
 def to_path(*args):
+    """Create a path from a collection of path segments."""
     try:
         return Path(*args).expanduser()
     except AttributeError:
@@ -74,25 +78,24 @@ def to_path(*args):
 
 # to_paths {{{2
 def to_paths(args):
-    "Iterate through up to two levels of arguments, converting them to paths"
+    """Iterate through up to two levels of arguments, converting them to paths"""
     for arg in args:
         if is_collection(arg):
             for each in arg:
                 yield to_path(each)
         else:
             yield to_path(arg)
- 
+
 
 # to_str {{{2
 def to_str(path):
-    # first convert to path to assure ~ expansion is done, then convert back to 
-    # string.
+    """first convert to path to assure ~ expansion is done, then convert back to string."""
     return str(to_path(path))
 
 
 # raise_os_error {{{2
-# Raise an error based on the errno.
 def raise_os_error(errno, filename=None):
+    """Raise an error based on the errno."""
     if filename:
         raise OSError(errno, os.strerror(errno), str(filename))
     else:
@@ -101,6 +104,7 @@ def raise_os_error(errno, filename=None):
 
 # split_cmd {{{2
 def split_cmd(cmd):
+    """Split the string cmd and return a list."""
     from shlex import split
     return split(cmd)
 
@@ -116,6 +120,11 @@ def quote_arg(arg):
             import re
         except ImportError:
             def quote(arg):
+                """
+                Return a shell-escaped version of the string *arg*.
+                Used if fail to load quote from shlex and pipes.
+
+                """
                 if not arg:
                     return "''"
                 if re.search(r'[^\w@%+=:,./-]', arg, re.ASCII) is None:
@@ -145,14 +154,19 @@ def set_prefs(**kwargs):
             subclasses. Requires that inform be installed.
         encoding (str):
             The encoding to use if one is not specified.
+
     """
     PREFERENCES.update(kwargs)
 
+
 # SHLib state
 def get_state():
+    """Return PREFERENCES"""
     return PREFERENCES
 
+
 def set_state(state):
+    """Set new PREFERENCES with state dict and return old PREFERENCES"""
     global PREFERENCES
     old_state = PREFERENCES
     PREFERENCES = state
@@ -162,7 +176,7 @@ def set_state(state):
 # File system utility functions (cp, mv, rm, ln, touch, mkdir, ls, etc.) {{{1
 # cp {{{2
 def cp(*paths):
-    "Copy files or directories (equivalent to 'cp -rf')"
+    """Copy files or directories (equivalent to 'cp -rf')"""
     dest = to_path(paths[-1])
     srcs = list(to_paths(paths[:-1]))
     if dest.is_dir():
@@ -188,7 +202,7 @@ def cp(*paths):
 
 # mv {{{2
 def mv(*paths):
-    "Move file or directory (supports moves across filesystems)"
+    """Move file or directory (supports moves across filesystems)"""
     dest = to_path(paths[-1])
     srcs = list(to_paths(paths[:-1]))
     assert len(srcs) >= 1
@@ -214,10 +228,9 @@ def mv(*paths):
         shutil.move(to_str(src), to_str(dest))
 
 
-
 # rm {{{2
 def rm(*paths):
-    "Remove files or directories (equivalent to rm -rf)"
+    """Remove files or directories (equivalent to rm -rf)"""
     for path in to_paths(paths):
         try:
             if path.is_dir():
@@ -235,16 +248,14 @@ def rm(*paths):
 
 # ln {{{2
 def ln(src, dest):
-    "Create symbolic link."
+    """Create symbolic link."""
     dest = to_path(dest)
     dest.symlink_to(src)
 
 
 # touch {{{2
 def touch(*paths):
-    """
-    Touch one or more files. If files do not exist, create them.
-    """
+    """Touch one or more files. If files do not exist, create them."""
     for path in to_paths(paths):
         path.touch()
 
@@ -254,6 +265,7 @@ def mkdir(*paths):
     """
     Create a directory and all parent directories. Returns without complaint if
     directory already exists.
+
     """
     for path in to_paths(paths):
         try:
@@ -271,7 +283,12 @@ def mkdir(*paths):
 
 # mount/umount {{{2
 class mount:
+    """
+    Mount the path provided in constructor if not already mounted.
 
+    Unmount path at object destruction if it has been mount at construction
+
+    """
     def __init__(self, path):
         self.path = to_path(path)
         self.mounted_externally = is_mounted(self.path)
@@ -286,16 +303,32 @@ class mount:
         if not self.mounted_externally:
             umount(self.path)
 
+
 def umount(path):
+    """Run command umount for string path"""
     Run(['umount', path])
 
 
 def is_mounted(path):
+    """Run command mountpoint for string path"""
     return Run(['mountpoint', '-q', path], '0,1').status == 0
 
 
 # cd {{{2
 class cd:
+    """
+    Change to an existing directory:
+
+    Ex: cd(path)
+    Makes path the current working directory.
+
+    May also be used in a with block:
+    Ex:
+    with cd(path):
+        cwd()
+    The working directory returns to its original value upon leaving the with block.
+
+    """
     def __init__(self, path):
         self.starting_dir = cwd()
         os.chdir(to_str(path))
@@ -316,14 +349,14 @@ def cwd():
 
 # chmod {{{2
 def chmod(mode, *paths):
-    "Change the mode bits of one or more file or directory"
+    """Change the mode bits of one or more file or directory"""
     for path in to_paths(paths):
         path.chmod(mode)
 
 
 # getmod {{{2
 def getmod(path):
-    "Return the permission bits for a file or directory"
+    """Return the permission bits for a file or directory"""
     return os.stat(str(path)).st_mode & 0o777
 
 
@@ -376,6 +409,7 @@ def ls(*paths, **kwargs):
     hidden = kwargs.get('hidden')
 
     def acceptable(path):
+        """Return True if path should be return by ls"""
         if only == 'file' and not path.is_file():
             return False
         if only == 'dir' and not path.is_dir():
@@ -485,6 +519,7 @@ def leaves(path, hidden=False, report=None):
         Function to call if an error is detected. Takes one argument, the
         exception, which will only be an OSError.  If not specified, no errors
         are reported.
+
     """
     for each in _leaves(Path(path), hidden, report):
         yield each
@@ -495,6 +530,7 @@ def cartesian_product(*fragments):
     """
     Combine path fragments to to a path list. Each fragment must be a string or
     path or an iterable that generates strings or paths.
+
     """
     if not len(fragments):
         return []
@@ -548,12 +584,13 @@ class Cmd(object):
     OSError is raised, however if the *use_inform* preference is true, then
     inform.Error is used. In this case the error includes attributes that can be
     used to access the stdout, stderr, status, cmd, and msg.
+
     """
 
     # __init__ {{{3
     def __init__(
-        self, cmd, modes=None, env=None, encoding=None,
-        log=None, option_args=None
+            self, cmd, modes=None, env=None, encoding=None,
+            log=None, option_args=None
     ):
         self.cmd = cmd
         self.env = env
@@ -599,6 +636,7 @@ class Cmd(object):
         Returns exit status if wait_for_termination is True.
         If wait_for_termination is False, you must call wait(), otherwise stdin
         is not be applied.  If you don't want to wait, call start() instead.
+
         """
         self.stdin = stdin
         import subprocess
@@ -633,9 +671,9 @@ class Cmd(object):
             if PREFERENCES['use_inform']:
                 from inform import Error, os_error
                 raise Error(
-                    msg = os_error(e),
-                    cmd = render_command(self.cmd),
-                    template = '{msg}'
+                    msg=os_error(e),
+                    cmd=render_command(self.cmd),
+                    template='{msg}'
                 )
             else:
                 raise
@@ -653,6 +691,7 @@ class Cmd(object):
 
         If stdin is given, it should be a string. Otherwise, no connection is
         made to stdin of the command.
+
         """
         self.stdin = None
         import subprocess
@@ -702,6 +741,7 @@ class Cmd(object):
         This should only be used if wait-for-termination is False.
 
         Returns exit status of the command.
+
         """
         process = self.process
 
@@ -724,12 +764,12 @@ class Cmd(object):
             if PREFERENCES['use_inform']:
                 from inform import Error
                 raise Error(
-                    msg = msg,
-                    status = self.status,
-                    stdout = self.stdout.rstrip() if self.stdout else None,
-                    stderr = self.stderr.rstrip() if self.stderr else None,
-                    cmd = render_command(self.cmd),
-                    template = '{msg}'
+                    msg=msg,
+                    status=self.status,
+                    stdout=self.stdout.rstrip() if self.stdout else None,
+                    stderr=self.stderr.rstrip() if self.stderr else None,
+                    cmd=render_command(self.cmd),
+                    template='{msg}'
                 )
             else:
                 raise OSError(None, msg)
@@ -737,6 +777,7 @@ class Cmd(object):
 
     # kill {{{3
     def kill(self):
+        """Kill a command started with Cmd"""
         self.process.kill()
         self.process.wait()
 
@@ -744,13 +785,13 @@ class Cmd(object):
     def __str__(self):
         if is_str(self.cmd):
             return self.cmd
-        else:
-            return ' '.join(str(c) for c in self.cmd)
+        return ' '.join(str(c) for c in self.cmd)
 
 
 # Run class {{{2
 class Run(Cmd):
-    """Run a command immediately.
+    """
+    Run a command immediately.
 
     See Cmd for information on the arguments.
     Default mode is 'soeW0'.
@@ -762,10 +803,11 @@ class Run(Cmd):
            output = Run(['grep', filename], modes='sOeW1').stdout
        Run command and capture stdout; merge stderr into stdout:
            output = Run(['grep', filename], modes='sOMW1').stdout
+
     """
     def __init__(
-        self, cmd, modes=None, stdin=None, env=None, encoding=None,
-        log=None, option_args=None
+            self, cmd, modes=None, stdin=None, env=None, encoding=None,
+            log=None, option_args=None
     ):
         self.cmd = cmd
         self.stdin = None
@@ -785,15 +827,17 @@ class Run(Cmd):
 
 # Sh class (deprecated) {{{2
 class Sh(Cmd):
-    """Run a command immediately in the shell.
+    """
+    Run a command immediately in the shell.
 
     See Cmd for information on the arguments, see Run for examples.
     Sh() is the same as Run except S mode is default.
     Default mode is 'SoeW0'.
+
     """
     def __init__(
-        self, cmd, modes=None, stdin=None, env=None, encoding=None,
-        log=None, option_args=None
+            self, cmd, modes=None, stdin=None, env=None, encoding=None,
+            log=None, option_args=None
     ):
         self.cmd = cmd
         self.stdin = None
@@ -812,16 +856,18 @@ class Sh(Cmd):
 
 # Start class {{{2
 class Start(Cmd):
-    """Run a command immediately, don't wait for it to exit.
+    """
+    Run a command immediately, don't wait for it to exit.
 
     See Cmd for information on the arguments.
     Start() is the similar to Run when using 'w' mode.  The difference is if you
     specify O or E modes, those streams are suppressed rather than being
     captured.
+
     """
     def __init__(
-        self, cmd, modes=None, stdin=None, env=None, encoding=None,
-        log=None, option_args=None
+            self, cmd, modes=None, stdin=None, env=None, encoding=None,
+            log=None, option_args=None
     ):
         self.cmd = cmd
         self.stdin = None
@@ -866,17 +912,17 @@ class _Accept(object):
         self.accept = accept
 
     def unacceptable(self, status):
+        """Return True is status is unacceptable otherwise False"""
         if self.accept is True:
             return False
         elif type(self.accept) is tuple:
             return status not in self.accept
-        else:
-            return status < 0 or status > self.accept
+        return status < 0 or status > self.accept
 
 
 # run (deprecated) {{{2
 def run(cmd, stdin=None, accept=0, shell=False):
-    "Run a command without capturing its output."
+    """Run a command without capturing its output."""
     import subprocess
 
     # I have never been able to get Popen to work properly if cmd is not
@@ -899,13 +945,13 @@ def run(cmd, stdin=None, accept=0, shell=False):
 
 # sh (deprecated) {{{2
 def sh(cmd, stdin=None, accept=0, shell=True):
-    "Execute a command with a shell without capturing its output"
+    """Execute a command with a shell without capturing its output"""
     return run(cmd, stdin, accept, shell=True)
 
 
 # bg (deprecated) {{{2
 def bg(cmd, stdin=None, shell=False):
-    "Execute a command in the background without capturing its output."
+    """Execute a command in the background without capturing its output."""
     import subprocess
     streams = {'stdin': subprocess.PIPE} if stdin is not None else {}
     process = subprocess.Popen(cmd, shell=shell, **streams)
@@ -917,13 +963,13 @@ def bg(cmd, stdin=None, shell=False):
 
 # shbg (deprecated) {{{2
 def shbg(cmd, stdin=None, shell=True):
-    "Execute a command with a shell in the background without capturing its output."
+    """Execute a command with a shell in the background without capturing its output."""
     return bg(cmd, stdin, shell=True)
 
 
 # which {{{2
 def which(name, path=None, flags=os.X_OK):
-    "Search PATH for executable files with the given name."
+    """Search PATH for executable files with the given name."""
     result = []
     if path is None:
         path = os.environ.get('PATH', '')
@@ -936,7 +982,8 @@ def which(name, path=None, flags=os.X_OK):
 
 # render_command {{{2
 def render_command(cmd, option_args=None, width=70):
-    """ Render a command.
+    """
+    Render a command.
 
     Converts the command to a string.  The formatting is such that you should be
     able to feed the result directly to a shell and have command execute
