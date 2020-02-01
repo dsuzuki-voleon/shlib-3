@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm -rf *.egg-info
+rm -rf *.egg-info .eggs
 rm -f {helloworld,test,ref}
 rm -f TEST REF
 rm -rf f[0-9] d[0-9]
