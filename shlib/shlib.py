@@ -19,6 +19,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see [http://www.gnu.org/licenses/].
+
 """
 
 __version__ = '1.1.0'
@@ -88,8 +89,7 @@ def to_paths(args):
 
 # to_str {{{2
 def to_str(path):
-    """first convert to path to assure ~ expansion is done, then convert back to
-    string."""
+    """first convert to path to assure ~ expansion is done, then convert back to string."""
     return str(to_path(path))
 
 
@@ -123,6 +123,7 @@ def quote_arg(arg):
                 """
                 Return a shell-escaped version of the string *arg*.
                 Used if fail to load quote from shlex and pipes.
+
                 """
                 if not arg:
                     return "''"
@@ -153,6 +154,7 @@ def set_prefs(**kwargs):
             subclasses. Requires that inform be installed.
         encoding (str):
             The encoding to use if one is not specified.
+
     """
     PREFERENCES.update(kwargs)
 
@@ -253,9 +255,7 @@ def ln(src, dest):
 
 # touch {{{2
 def touch(*paths):
-    """
-    Touch one or more files. If files do not exist, create them.
-    """
+    """Touch one or more files. If files do not exist, create them."""
     for path in to_paths(paths):
         path.touch()
 
@@ -265,6 +265,7 @@ def mkdir(*paths):
     """
     Create a directory and all parent directories. Returns without complaint if
     directory already exists.
+
     """
     for path in to_paths(paths):
         try:
@@ -286,6 +287,7 @@ class mount:
     Mount the path provided in constructor if not already mounted.
 
     Unmount path at object destruction if it has been mount at construction
+
     """
     def __init__(self, path):
         self.path = to_path(path)
@@ -317,14 +319,15 @@ class cd:
     """
     Change to an existing directory:
 
-    >> cd(path)
+    Ex: cd(path)
     Makes path the current working directory.
 
     May also be used in a with block:
-
-    >> with cd(path):
-    >>    cwd()
+    Ex:
+    with cd(path):
+        cwd()
     The working directory returns to its original value upon leaving the with block.
+
     """
     def __init__(self, path):
         self.starting_dir = cwd()
@@ -516,6 +519,7 @@ def leaves(path, hidden=False, report=None):
         Function to call if an error is detected. Takes one argument, the
         exception, which will only be an OSError.  If not specified, no errors
         are reported.
+
     """
     for each in _leaves(Path(path), hidden, report):
         yield each
@@ -526,6 +530,7 @@ def cartesian_product(*fragments):
     """
     Combine path fragments to to a path list. Each fragment must be a string or
     path or an iterable that generates strings or paths.
+
     """
     if not len(fragments):
         return []
@@ -579,6 +584,7 @@ class Cmd(object):
     OSError is raised, however if the *use_inform* preference is true, then
     inform.Error is used. In this case the error includes attributes that can be
     used to access the stdout, stderr, status, cmd, and msg.
+
     """
 
     # __init__ {{{3
@@ -630,6 +636,7 @@ class Cmd(object):
         Returns exit status if wait_for_termination is True.
         If wait_for_termination is False, you must call wait(), otherwise stdin
         is not be applied.  If you don't want to wait, call start() instead.
+
         """
         self.stdin = stdin
         import subprocess
@@ -684,6 +691,7 @@ class Cmd(object):
 
         If stdin is given, it should be a string. Otherwise, no connection is
         made to stdin of the command.
+
         """
         self.stdin = None
         import subprocess
@@ -733,6 +741,7 @@ class Cmd(object):
         This should only be used if wait-for-termination is False.
 
         Returns exit status of the command.
+
         """
         process = self.process
 
@@ -781,7 +790,8 @@ class Cmd(object):
 
 # Run class {{{2
 class Run(Cmd):
-    """Run a command immediately.
+    """
+    Run a command immediately.
 
     See Cmd for information on the arguments.
     Default mode is 'soeW0'.
@@ -793,6 +803,7 @@ class Run(Cmd):
            output = Run(['grep', filename], modes='sOeW1').stdout
        Run command and capture stdout; merge stderr into stdout:
            output = Run(['grep', filename], modes='sOMW1').stdout
+
     """
     def __init__(
             self, cmd, modes=None, stdin=None, env=None, encoding=None,
@@ -816,11 +827,13 @@ class Run(Cmd):
 
 # Sh class (deprecated) {{{2
 class Sh(Cmd):
-    """Run a command immediately in the shell.
+    """
+    Run a command immediately in the shell.
 
     See Cmd for information on the arguments, see Run for examples.
     Sh() is the same as Run except S mode is default.
     Default mode is 'SoeW0'.
+
     """
     def __init__(
             self, cmd, modes=None, stdin=None, env=None, encoding=None,
@@ -843,12 +856,14 @@ class Sh(Cmd):
 
 # Start class {{{2
 class Start(Cmd):
-    """Run a command immediately, don't wait for it to exit.
+    """
+    Run a command immediately, don't wait for it to exit.
 
     See Cmd for information on the arguments.
     Start() is the similar to Run when using 'w' mode.  The difference is if you
     specify O or E modes, those streams are suppressed rather than being
     captured.
+
     """
     def __init__(
             self, cmd, modes=None, stdin=None, env=None, encoding=None,
@@ -967,7 +982,8 @@ def which(name, path=None, flags=os.X_OK):
 
 # render_command {{{2
 def render_command(cmd, option_args=None, width=70):
-    """ Render a command.
+    """
+    Render a command.
 
     Converts the command to a string.  The formatting is such that you should be
     able to feed the result directly to a shell and have command execute

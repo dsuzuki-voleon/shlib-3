@@ -126,6 +126,7 @@ if sys.version_info < (3, 5):
     def _read_bytes(self):
         """
         Open the file in binary mode, read it, and close the file.
+
         """
         with self.open(mode='rb') as f:
             return f.read()
@@ -136,6 +137,7 @@ if sys.version_info < (3, 5):
     def _read_text(self, encoding=None, errors=None):
         """
         Open the file in text mode, read it, and close the file.
+
         """
         with self.open(mode='r', encoding=encoding, errors=errors) as f:
             return f.read()
@@ -146,6 +148,7 @@ if sys.version_info < (3, 5):
     def _write_bytes(self, data):
         """
         Open the file in binary mode, write it, and close the file.
+
         """
         if not isinstance(data, six.binary_type):
             raise TypeError(
@@ -162,6 +165,7 @@ if sys.version_info < (3, 5):
     def _write_text(self, text, encoding=None, errors=None):
         """
         Open the file in text mode, write it, and close the file.
+
         """
         path = str(self)
         with codecs.open(path, mode='w', encoding=encoding, errors=errors) as f:
@@ -173,6 +177,7 @@ if sys.version_info < (3, 5):
     def _expanduser(self):
         """
         Return a new path with expanded ~ and ~user constructs.
+
         """
 
         path = str(self)
